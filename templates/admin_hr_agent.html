@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI HR Agent - LMS Admin</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+  <style>
+    :root {
+      --primary-color: #00d9ff; --primary-light: #a7f3ff; --primary-dark: #00b8d4; --background-color: #0f172a; --sidebar-bg: #1e293b; --card-bg: #1e293b; --text-color: #f8fafc; --text-muted: #94a3b8; --border-color: #334155; --shadow-color: rgba(0, 217, 255, 0.1); --success-color: #22c55e; --danger-color: #ef4444; --input-bg: #131c31;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Poppins', sans-serif; background-color: var(--background-color); color: var(--text-color); overflow-x: hidden; }
+    .dashboard-container { display: flex; min-height: 100vh; }
+    .sidebar { width: 260px; background-color: var(--sidebar-bg); padding: 1.5rem; display: flex; flex-direction: column; border-right: 1px solid var(--border-color); }
+    .sidebar-header-link { text-decoration: none; color: inherit; display: block; margin-bottom: 2.5rem; }
+    .sidebar-header { display: flex; align-items: center; gap: 1rem; }
+    .sidebar-header .logo-icon { font-size: 2rem; color: var(--primary-color); }
+    .sidebar-header h1 { font-size: 1.5rem; font-weight: 600; }
+    .sidebar-nav h3 { font-size: 0.8rem; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin: 1.5rem 0 0.75rem; }
+    .sidebar-nav ul { list-style: none; }
+    .sidebar-nav ul li a { color: var(--text-muted); text-decoration: none; display: flex; align-items: center; padding: 0.75rem 1rem; border-radius: 8px; transition: background 0.2s ease, color 0.2s ease; font-weight: 500; margin-bottom: 0.25rem; }
+    .sidebar-nav ul li a i { margin-right: 1rem; min-width: 20px; text-align: center; font-size: 1.1rem; }
+    .sidebar-nav ul li a:hover { background-color: rgba(0, 217, 255, 0.1); color: var(--primary-light); }
+    .sidebar-nav ul li a.active { background-color: var(--primary-color); color: var(--background-color); font-weight: 600; box-shadow: 0 4px 15px var(--shadow-color); }
+    .sidebar-footer { margin-top: auto; }
+    .main-content { flex: 1; padding: 2rem; overflow-y: auto; }
+    .main-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+    .main-header h2 { font-size: 1.8rem; font-weight: 600; }
+    .header-actions button { background-color: var(--primary-color); color: var(--background-color); border: none; padding: 0.6rem 1.2rem; font-family: 'Poppins', sans-serif; font-size: 0.9rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; margin-left: 1rem; }
+    .header-actions button:hover { background-color: var(--primary-dark); transform: translateY(-2px); }
+    .upload-container { background-color: var(--card-bg); padding: 2.5rem; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 2rem; }
+    .upload-box { border: 2px dashed var(--border-color); border-radius: 12px; padding: 3rem; text-align: center; transition: all 0.3s ease; cursor: pointer; }
+    .upload-box.dragover { border-color: var(--primary-color); background-color: rgba(0, 217, 255, 0.05); }
+    .upload-box i { font-size: 3rem; color: var(--primary-color); margin-bottom: 1rem; }
+    .upload-box p { color: var(--text-muted); }
+    input[type="file"] { display: none; }
+    #file-name { margin-top: 1.5rem; font-weight: 600; color: var(--primary-light); }
+    #upload-status { margin-top: 1rem; font-size: 0.9rem; height: 20px; }
+    .upload-btn { margin-top: 1.5rem; padding: 0.8rem 2rem; font-size: 1rem; background: var(--primary-color); color: var(--background-color); border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s ease; }
+    .upload-btn:disabled { background: var(--text-muted); cursor: not-allowed; }
+    .upload-btn:hover:not(:disabled) { background: var(--primary-dark); transform: translateY(-2px); }
+    .table-container { background-color: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; }
+    .employee-table { width: 100%; border-collapse: collapse; }
+    .employee-table th, .employee-table td { padding: 1rem 1.5rem; text-align: left; vertical-align: middle; }
+    .employee-table thead { background-color: #2a3a54; }
+    .employee-table th { font-weight: 600; color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; }
+    .employee-table tbody tr:hover { background-color: rgba(0, 217, 255, 0.05); }
+    .report-btn { background-color: var(--primary-color); color: var(--background-color); text-decoration: none; padding: 0.4rem 1rem; border-radius: 6px; font-weight: 500; font-size: 0.8rem; transition: all 0.2s ease; }
+    .report-btn:hover { background-color: var(--primary-dark); }
+    .loader-container { text-align: center; padding: 3rem; }
+    .loader { border: 4px solid var(--border-color); border-top: 4px solid var(--primary-color); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    
+    .pagination-container { display: flex; justify-content: center; margin-top: 1.5rem; align-items: center; }
+    .pagination-btn { background-color: var(--card-bg); color: var(--text-color); border: 1px solid var(--border-color); padding: 0.5rem 1rem; margin: 0 0.25rem; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; }
+    .pagination-btn:hover:not(:disabled) { background-color: rgba(0, 217, 255, 0.1); border-color: var(--primary-color); }
+    .pagination-btn.active { background-color: var(--primary-color); color: var(--background-color); border-color: var(--primary-color); }
+    .pagination-btn:disabled { cursor: not-allowed; opacity: 0.5; }
+    .pagination-info { margin: 0 1rem; color: var(--text-muted); font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <nav class="sidebar">
+      <a href="{{ url_for('dashboard_admin') }}" class="sidebar-header-link">
+        <div class="sidebar-header"><i class="fas fa-brain logo-icon"></i><h1>LMS Admin</h1></div>
+      </a>
+      <div class="sidebar-nav">
+        <h3>Management</h3>
+        <ul>
+          <li><a href="{{ url_for('admin.hr_agent_page') }}" class="active"><i class="fas fa-users"></i> Employees</a></li>
+          <li><a href="{{ url_for('admin.courses_page') }}"><i class="fas fa-book"></i> Courses</a></li>
+        </ul>
+        <h3>Reports & Analytics</h3>
+        <ul>
+          <li><a href="{{ url_for('admin.agent_metrics_page') }}"><i class="fas fa-chart-simple"></i> Agent Metrics</a></li>
+          <li><a href="{{ url_for('admin.generate_reports_page') }}"><i class="fas fa-file-arrow-down"></i> Generate Reports</a></li>
+        </ul>
+      </div>
+      <div class="sidebar-footer">
+         <div class="sidebar-nav">
+             <h3>Other</h3>
+             <ul><li><a href="#" onclick="logout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a></li></ul>
+         </div>
+      </div>
+    </nav>
+    <main class="main-content">
+      <header class="main-header">
+        <h2>AI HR Agent - Employee Management</h2>
+        <div class="header-actions">
+            <a href="{{ url_for('admin.add_employee_page') }}" style="text-decoration: none;">
+                <button><i class="fas fa-user-plus"></i> Add Manually</button>
+            </a>
+            <a href="{{ url_for('admin.delete_employee_page') }}" style="text-decoration: none;">
+                <button style="background-color: var(--danger-color);"><i class="fas fa-user-minus"></i> Delete Employee</button>
+            </a>
+        </div>
+      </header>
+      <div class="upload-container">
+        <div class="upload-box" id="drop-area">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <h3>Onboard New Employees via File Upload</h3>
+          <p>Drag & drop a file (.csv, .xlsx) with columns: NAME, and subject scores (e.g., HTML, PYTHON).</p>
+          <input type="file" id="fileElem" accept=".csv,.xlsx,.json">
+          <div id="file-name">No file selected</div>
+          <button id="uploadBtn" class="upload-btn" disabled>Upload & Process</button>
+          <div id="upload-status"></div>
+        </div>
+      </div>
+      <div class="search-filter-container" style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+        <div class="search-box" style="position: relative; flex: 1; margin-right: 1rem;">
+          <i class="fas fa-search" style="position: absolute; left: 12px; top: 12px; color: var(--text-muted);"></i>
+          <input type="text" id="searchInput" placeholder="Search by name or ID..." style="width: 100%; padding: 0.7rem 1rem 0.7rem 2.5rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-color);">
+        </div>
+        <div class="domain-filter">
+          <select id="domainFilter" style="padding: 0.7rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-color);">
+            <option value="">All Domains</option>
+            <option value="frontend">Frontend</option>
+            <option value="backend">Backend</option>
+            <option value="full stack">Full Stack</option>
+            <option value="data science">Data Science</option>
+            <option value="devops">DevOps</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-container">
+        <table class="employee-table">
+          <thead><tr><th>Emp ID</th><th>Name</th><th>Domain</th><th>AI Report</th><th>Download</th></tr></thead>
+          <tbody id="employeeTableBody"></tbody>
+        </table>
+        <div class="pagination-container" id="paginationContainer">
+          <button class="pagination-btn" id="prevPageBtn" disabled><i class="fas fa-chevron-left"></i></button>
+          <div class="pagination-info" id="paginationInfo">Page 1 of 1</div>
+          <button class="pagination-btn" id="nextPageBtn" disabled><i class="fas fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        gsap.from('.sidebar', { duration: 1, x: -260, ease: 'power3.out' });
+        gsap.from('.main-content', { duration: 1, opacity: 0, ease: 'power2.inOut', delay: 0.3 });
+        gsap.from('.main-header, .upload-container, .table-container', { duration: 1, opacity: 0, y: 30, ease: 'power3.out', stagger: 0.1, delay: 0.5 });
+        loadEmployeeData();
+    });
+
+    const dropArea = document.getElementById("drop-area");
+    const fileElem = document.getElementById("fileElem");
+    const fileNameDisplay = document.getElementById("file-name");
+    const uploadBtn = document.getElementById("uploadBtn");
+    const uploadStatus = document.getElementById("upload-status");
+    let selectedFile = null;
+    let employeeData = [];
+    let currentPage = 1;
+    const itemsPerPage = 20;
+
+    dropArea.addEventListener("click", () => fileElem.click());
+    fileElem.addEventListener("change", (e) => updateFile(e.target.files[0]));
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => dropArea.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false));
+    ['dragenter', 'dragover'].forEach(eventName => dropArea.addEventListener(eventName, () => dropArea.classList.add('dragover'), false));
+    ['dragleave', 'drop'].forEach(eventName => dropArea.addEventListener(eventName, () => dropArea.classList.remove('dragover'), false));
+    dropArea.addEventListener('drop', (e) => updateFile(e.dataTransfer.files[0]), false);
+    uploadBtn.addEventListener("click", uploadFile);
+    
+    document.getElementById('prevPageBtn').addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        displayEmployees();
+      }
+    });
+    
+    document.getElementById('nextPageBtn').addEventListener('click', () => {
+      const filteredEmployees = filterEmployees();
+      const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
+      if (currentPage < totalPages) {
+        currentPage++;
+        displayEmployees();
+      }
+    });
+    
+    // Add event listeners for search and filter
+    document.getElementById('searchInput').addEventListener('input', () => {
+      currentPage = 1; // Reset to first page when search changes
+      displayEmployees();
+    });
+    
+    document.getElementById('domainFilter').addEventListener('change', () => {
+      currentPage = 1; // Reset to first page when filter changes
+      displayEmployees();
+    });
+
+    function updateFile(file) {
+      selectedFile = file;
+      if (selectedFile) {
+        fileNameDisplay.textContent = selectedFile.name;
+        uploadBtn.disabled = false;
+        uploadStatus.textContent = '';
+      }
+    }
+
+    async function uploadFile() {
+      if (!selectedFile) return;
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+      uploadStatus.innerHTML = `<span style="color: var(--primary-light);">⏳ Agent is processing the file...</span>`;
+      uploadBtn.disabled = true;
+
+      try {
+        const response = await fetch("/admin/hr_agent/upload_employees", { method: "POST", body: formData, credentials: 'include' });
+        const result = await response.json();
+        if (result.success) {
+          uploadStatus.innerHTML = `<span style="color: var(--success-color);">✅ ${result.message}</span>`;
+          loadEmployeeData();
+        } else {
+          uploadStatus.innerHTML = `<span style="color: var(--danger-color);">❌ ${result.message}</span>`;
+        }
+      } catch (err) {
+        uploadStatus.innerHTML = `<span style="color: var(--danger-color);">❌ Upload failed.</span>`;
+      } finally {
+        fileNameDisplay.textContent = "No file selected";
+        selectedFile = null;
+      }
+    }
+
+    async function loadEmployeeData() {
+      const tbody = document.getElementById('employeeTableBody');
+      tbody.innerHTML = `<tr><td colspan="5"><div class="loader-container"><div class="loader"></div></div></td></tr>`;
+      try {
+        const res = await fetch('/admin/list_employees', { credentials: 'include' });
+        const data = await res.json();
+        
+        if (data.success) {
+          employeeData = data.employees || [];
+          
+          // Debug: Log the first few employees to see their domain values
+          console.log('Employee data sample:');
+          employeeData.slice(0, 5).forEach(emp => {
+            console.log(`ID: ${emp.id}, Name: ${emp.NAME}, Domain: ${emp.domain}`);
+          });
+          
+          // Populate domain filter with actual domains from data
+          populateDomainFilter(employeeData);
+          
+          currentPage = 1;
+          displayEmployees();
+        } else {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem;">No employees found.</td></tr>';
+          updatePaginationControls(0);
+        }
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem; color: var(--danger-color);">Failed to load data.</td></tr>';
+        updatePaginationControls(0);
+      }
+    }
+    
+    function populateDomainFilter(employees) {
+      const domainFilter = document.getElementById('domainFilter');
+      if (!domainFilter) return;
+      
+      // Clear existing options except the first one (All Domains)
+      while (domainFilter.options.length > 1) {
+        domainFilter.remove(1);
+      }
+      
+      // Get unique domains
+      const domains = new Set();
+      employees.forEach(emp => {
+        if (emp.domain) domains.add(emp.domain.toLowerCase());
+      });
+      
+      // Add domain options
+      domains.forEach(domain => {
+        const option = document.createElement('option');
+        option.value = domain;
+        option.textContent = domain.charAt(0).toUpperCase() + domain.slice(1); // Capitalize first letter
+        domainFilter.appendChild(option);
+      });
+      
+      console.log('Domain filter populated with:', [...domains]);
+    }
+    
+    function displayEmployees() {
+      const tbody = document.getElementById('employeeTableBody');
+      const filteredEmployees = filterEmployees();
+      const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
+      
+      // Calculate start and end index for current page
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = Math.min(startIndex + itemsPerPage, filteredEmployees.length);
+      const currentPageEmployees = filteredEmployees.slice(startIndex, endIndex);
+      
+      if (currentPageEmployees.length > 0) {
+        tbody.innerHTML = currentPageEmployees.map(emp => `
+          <tr>
+            <td>${emp.id}</td>
+            <td>${emp.NAME || 'N/A'}</td>
+            <td>${emp.domain || 'N/A'}</td>
+            <td>
+              <a href="/admin/ai_report/${emp.id}" class="report-btn">
+                <i class="fas fa-robot"></i> Generate
+              </a>
+            </td>
+            <td>
+              <a href="/admin/generate_report?type=individual&target=${emp.id}" class="report-btn">
+                <i class="fas fa-download"></i> CSV
+              </a>
+            </td>
+          </tr>`).join('');
+      } else {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem;">No employees found.</td></tr>';
+      }
+      
+      updatePaginationControls(totalPages);
+    }
+    
+    function filterEmployees() {
+      const searchTerm = document.getElementById('searchInput')?.value?.toLowerCase() || '';
+      const selectedDomain = document.getElementById('domainFilter')?.value || '';
+      
+      return employeeData.filter(emp => {
+        const matchesSearch = searchTerm === '' || 
+                            (emp.NAME?.toLowerCase().includes(searchTerm)) || 
+                            (emp.id?.toString().includes(searchTerm));
+        
+        // Handle case where domain might be null or undefined
+        const empDomain = (emp.domain || '').toLowerCase();
+        const matchesDomain = selectedDomain === '' || empDomain === selectedDomain;
+        
+        return matchesSearch && matchesDomain;
+      });
+    }
+    
+    function updatePaginationControls(totalPages) {
+      const prevBtn = document.getElementById('prevPageBtn');
+      const nextBtn = document.getElementById('nextPageBtn');
+      const paginationInfo = document.getElementById('paginationInfo');
+      
+      prevBtn.disabled = currentPage <= 1;
+      nextBtn.disabled = currentPage >= totalPages;
+      
+      if (totalPages > 0) {
+        paginationInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+      } else {
+        paginationInfo.textContent = 'No pages';
+      }
+    }
+    
+    async function logout(event) {
+      event.preventDefault();
+      await fetch("/logout", {method: "POST", credentials: "include"});
+      window.location.href = "/";
+    }
+  </script>
+</body>
+</html>

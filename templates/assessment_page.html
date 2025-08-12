@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assessment for {{ course_name }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary-color: #00d9ff;
+            --primary-light: #a7f3ff;
+            --primary-dark: #00b8d4;
+            --background-color: #0f172a;
+            --sidebar-bg: #1e293b;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+        }
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-color);
+            z-index: 10;
+        }
+        .sidebar-header-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            margin-bottom: 2.5rem;
+        }
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .sidebar-header .logo-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+        }
+        .sidebar-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        .sidebar-nav h3 {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 1.5rem 0 0.75rem;
+        }
+        .sidebar-nav ul {
+            list-style: none;
+        }
+        .sidebar-nav ul li a {
+            color: var(--text-muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            transition: background 0.2s ease, color 0.2s ease;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+        .sidebar-nav ul li a i {
+            margin-right: 1rem;
+            min-width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        .sidebar-nav ul li a:hover {
+            background-color: rgba(0, 217, 255, 0.1);
+            color: var(--primary-light);
+        }
+        .sidebar-footer {
+            margin-top: auto;
+        }
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .quiz-card {
+            width: 100%;
+            max-width: 700px;
+            background-color: var(--card-bg);
+            padding: 2.5rem 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 4px 32px 0 rgba(0,217,255,0.08);
+            border: 1px solid var(--border-color);
+        }
+        .quiz-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary-light);
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+        .quiz-course {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+        .question-block {
+            margin-bottom: 2rem;
+        }
+        .question-block p {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-bottom: 1rem;
+        }
+        .quiz-option label {
+            display: block;
+            padding: 1rem;
+            border: 2px solid #334155;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            background: #192132;
+            color: var(--text-color);
+        }
+        .quiz-option input:checked + label {
+            border-color: var(--primary-color);
+            background-color: #1e293b;
+            font-weight: 600;
+            color: var(--primary-light);
+        }
+        .quiz-option input {
+            display: none;
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 1rem 0;
+            background-color: var(--primary-color);
+            color: var(--background-color);
+            font-weight: 700;
+            border: none;
+            border-radius: 0.75rem;
+            font-size: 1.2rem;
+            margin-top: 2rem;
+            transition: background 0.2s;
+            box-shadow: 0 2px 8px 0 rgba(0,217,255,0.08);
+        }
+        .submit-btn:hover {
+            background-color: var(--primary-light);
+            color: var(--background-color);
+        }
+        .result-message {
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <nav class="sidebar">
+        <a href="{{ url_for('dashboard_employee') }}" class="sidebar-header-link">
+            <div class="sidebar-header"><i class="fas fa-user-graduate logo-icon"></i><h1>Employee</h1></div>
+        </a>
+        <div class="sidebar-nav">
+            <h3>Navigation</h3>
+            <ul>
+                <li><a href="{{ url_for('dashboard_employee') }}"><i class="fas fa-arrow-left"></i> Back to Dashboard</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-footer">
+            <div class="sidebar-nav">
+                <h3>Account</h3>
+                <ul><li><a href="#" onclick="logout(event)"><i class="fas fa-sign-out-alt"></i> Sign Out</a></li></ul>
+            </div>
+        </div>
+    </nav>
+    <main class="main-content">
+        <div class="quiz-card">
+            <h1 class="quiz-title">Assessment Time!</h1>
+            <p class="quiz-course">Course: <span class="font-semibold">{{ course_name }}</span></p>
+            <form id="quizForm">
+                <div class="space-y-8">
+                    {% for question in questions %}
+                        {% set qidx = loop.index0 %}
+                        <div class="question-block">
+                            <p>{{ loop.index }}. {{ question.question }}</p>
+                            <div class="space-y-3">
+                                {% for option in question.options %}
+                                    <div class="quiz-option">
+                                        <input type="radio" name="question_{{ qidx }}" id="q{{ qidx }}o{{ loop.index0 }}" value="{{ loop.index0 }}" required>
+                                        <label for="q{{ qidx }}o{{ loop.index0 }}">{{ option }}</label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <button type="submit" id="submitBtn" class="submit-btn">Submit Answers</button>
+            </form>
+            <div id="resultMessage" class="result-message"></div>
+        </div>
+    </main>
+</div>
+<script>
+    function logout(event) {
+        event.preventDefault();
+        fetch("/logout", {method: "POST", credentials: "include"})
+            .then(() => { window.location.href = "/"; });
+    }
+    // Store the correct answers for each question
+    const correctAnswers = [
+        {% for question in questions %}
+            {% if question is defined and 'correct_answer' in question %}
+                {{ question.correct_answer }},
+            {% elif question is defined and 'correctAnswerIndex' in question %}
+                {{ question.correctAnswerIndex }},
+            {% else %}
+                null, // placeholder for missing answer
+            {% endif %}
+        {% endfor %}
+    ].filter(answer => answer !== null); // remove any null values
+
+    document.getElementById('quizForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+
+        const formData = new FormData(event.target);
+        const answers = {};
+        for (let [key, value] of formData.entries()) {
+            // Extract question index from the name (question_X)
+            const questionIndex = key.replace('question_', '');
+            answers[questionIndex] = parseInt(value);
+        }
+
+        // Show correct answers before submitting
+        showCorrectAnswers(answers);
+        
+        // Change button text
+        submitBtn.innerHTML = 'Proceeding to Results...';
+        
+        // Delay submission to allow user to see correct answers
+        setTimeout(async () => {
+            try {
+                const response = await fetch("{{ url_for('employee.submit_assessment_answers') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ answers: answers }),
+                });
+                const result = await response.json();
+                if (result.success) {
+                    window.location.href = result.redirect_url;
+                } else {
+                    alert('An error occurred while submitting your assessment.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Submit Answers';
+                }
+            } catch (error) {
+                console.error('Submission error:', error);
+                alert('Could not connect to the server. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Answers';
+            }
+        }, 5000); // 5 second delay to view correct answers
+    });
+    
+    function showCorrectAnswers(userAnswers) {
+        const questionBlocks = document.querySelectorAll('.question-block');
+        
+        questionBlocks.forEach((block, questionIndex) => {
+            const options = block.querySelectorAll('.quiz-option');
+            const userAnswer = userAnswers[questionIndex];
+            const correctAnswer = correctAnswers[questionIndex];
+            
+            // Add a result message to the question
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'mt-4 p-3 rounded-lg ' + 
+                (userAnswer === correctAnswer ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800');
+            resultDiv.innerHTML = userAnswer === correctAnswer ? 
+                '<span class="font-bold">✓ Correct!</span>' : 
+                `<span class="font-bold">✗ Incorrect.</span> The correct answer is: ${options[correctAnswer].querySelector('label').textContent}`;
+            block.appendChild(resultDiv);
+            
+            // Style the options based on correctness
+            options.forEach((option, optionIndex) => {
+                const label = option.querySelector('label');
+                
+                if (optionIndex === correctAnswer) {
+                    // Correct answer
+                    label.style.borderColor = '#10b981'; // green-500
+                    label.style.backgroundColor = '#d1fae5'; // green-100
+                } 
+                else if (optionIndex === userAnswer) {
+                    // Incorrect user answer
+                    label.style.borderColor = '#ef4444'; // red-500
+                    label.style.backgroundColor = '#fee2e2'; // red-100
+                }
+            });
+        });
+    }
+</script>
+</body>
+</html>

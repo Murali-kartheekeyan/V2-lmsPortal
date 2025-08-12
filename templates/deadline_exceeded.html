@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deadline Exceeded</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        .deadline-container {
+            max-width: 600px;
+            margin: 100px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .deadline-icon {
+            font-size: 80px;
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+        
+        .deadline-title {
+            color: #dc3545;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .deadline-message {
+            margin-bottom: 30px;
+            color: #555;
+        }
+        
+        .deadline-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="deadline-container">
+            <div class="deadline-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <h2 class="deadline-title">Time Exceeded</h2>
+            <div class="deadline-message">
+                <p>You have exceeded the deadline for completing this course.</p>
+                <p>The course <strong>{{ course_name }}</strong> was due by:</p>
+            </div>
+            <div class="deadline-info">
+                <h4>{{ deadline.strftime('%B %d, %Y at %I:%M %p') }}</h4>
+            </div>
+            <div class="action-buttons">
+                <a href="{{ url_for('employee.my_courses_page') }}" class="btn btn-primary">Return to My Courses</a>
+                <a href="{{ url_for('employee.dashboard') }}" class="btn btn-secondary">Go to Dashboard</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/jquery-3.6.0.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/fontawesome.min.js') }}"></script>
+</body>
+</html>

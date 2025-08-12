@@ -1,0 +1,270 @@
+<!-- File path comment removed as requested -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ agent_type.title() }} Agent - LMS Portal</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <!-- ADDED: Marked.js library to render Markdown from the AI -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <style>
+    :root {
+      --primary-color: #00d9ff; --primary-light: #a7f3ff; --primary-dark: #00b8d4; --background-color: #0f172a; --sidebar-bg: #1e293b; --card-bg: #1e293b; --text-color: #f8fafc; --text-muted: #94a3b8; --border-color: #334155; --shadow-color: rgba(0, 217, 255, 0.1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Poppins', sans-serif; background-color: var(--background-color); color: var(--text-color); overflow: hidden; }
+    .dashboard-container { display: flex; min-height: 100vh; height: 100vh; }
+    .sidebar { width: 260px; background-color: var(--sidebar-bg); padding: 1.5rem; display: flex; flex-direction: column; border-right: 1px solid var(--border-color); z-index: 10; }
+    .sidebar-header-link { text-decoration: none; color: inherit; display: block; margin-bottom: 2.5rem; }
+    .sidebar-header { display: flex; align-items: center; gap: 1rem; }
+    .sidebar-header .logo-icon { font-size: 2rem; color: var(--primary-color); }
+    .sidebar-header h1 { font-size: 1.5rem; font-weight: 600; }
+    .sidebar-nav h3 { font-size: 0.8rem; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin: 1.5rem 0 0.75rem; }
+    .sidebar-nav ul { list-style: none; }
+    .sidebar-nav ul li a { color: var(--text-muted); text-decoration: none; display: flex; align-items: center; padding: 0.75rem 1rem; border-radius: 8px; transition: background 0.2s ease, color 0.2s ease; font-weight: 500; margin-bottom: 0.25rem; }
+    .sidebar-nav ul li a i { margin-right: 1rem; min-width: 20px; text-align: center; font-size: 1.1rem; }
+    .sidebar-nav ul li a:hover { background-color: rgba(0, 217, 255, 0.1); color: var(--primary-light); }
+    .sidebar-footer { margin-top: auto; }
+    .main-content { flex: 1; padding: 2rem; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center; }
+    .agent-interaction { display: flex; flex-direction: column; }
+    .agent-header h2 { font-size: 2.5rem; font-weight: 700; text-transform: capitalize; color: var(--primary-light); }
+    .agent-header p { color: var(--text-muted); margin-bottom: 2rem; font-size: 1.1rem; }
+    .spline-container { height: 100%; min-height: 400px; }
+    .response-container { background-color: var(--card-bg); border-radius: 12px; padding: 1.5rem; border: 1px solid var(--border-color); min-height: 200px; }
+    .response-container h4 { font-size: 1.2rem; margin-bottom: 1rem; }
+    /* UPDATED: Styles for rendering Markdown content */
+    .response-container .details-content { line-height: 1.8; }
+    .response-container .details-content h3, .response-container .details-content strong { font-size: 1.1rem; font-weight: 600; color: var(--primary-light); margin-top: 1rem; }
+    .response-container .details-content ul { list-style-position: inside; padding-left: 1rem; }
+    .response-container .details-content li { margin-bottom: 0.5rem; }
+    
+    /* NEW: Styles for assessment buttons */
+    .course-list { margin-top: 1.5rem; }
+    .course-item { background-color: rgba(0, 217, 255, 0.1); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
+    .course-name { font-weight: 500; }
+    .course-date { font-size: 0.85rem; color: var(--text-muted); }
+    .assessment-btn { background-color: var(--primary-color); color: var(--background-color); border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-weight: 500; transition: all 0.2s ease; }
+    .assessment-btn:hover { background-color: var(--primary-light); }
+    .knowledge-check-btn { background-color: var(--primary-dark); color: var(--text-color); border: none; padding: 0.75rem 1.5rem; border-radius: 4px; cursor: pointer; font-weight: 500; margin-top: 1rem; width: 100%; transition: all 0.2s ease; }
+    .knowledge-check-btn:hover { background-color: var(--primary-color); color: var(--background-color); }
+    .loader { border: 4px solid var(--border-color); border-top: 4px solid var(--primary-color); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 2rem auto; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    
+    /* NEW: Styles for refreshment recommendations */
+    #refreshment-section {
+        background: linear-gradient(135deg, rgba(0, 217, 255, 0.1), rgba(34, 197, 94, 0.1));
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+    }
+    #refreshment-content {
+        color: var(--text-color);
+    }
+    #refreshment-content strong {
+        color: var(--primary-light);
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <nav class="sidebar">
+      <a href="{{ url_for('dashboard_employee') }}" class="sidebar-header-link">
+        <div class="sidebar-header"><i class="fas fa-user-graduate logo-icon"></i><h1>Employee</h1></div>
+      </a>
+      <div class="sidebar-nav">
+        <h3>Navigation</h3>
+        <ul>
+          <li><a href="{{ url_for('dashboard_employee') }}"><i class="fas fa-arrow-left"></i> Back to Dashboard</a></li>
+        </ul>
+      </div>
+      <div class="sidebar-footer">
+         <div class="sidebar-nav">
+             <h3>Account</h3>
+             <ul><li><a href="#" onclick="logout(event)"><i class="fas fa-sign-out-alt"></i> Sign Out</a></li></ul>
+         </div>
+      </div>
+    </nav>
+    <main class="main-content">
+      <div class="agent-interaction">
+        <div class="agent-header">
+          <h2>{{ agent_type.title() }} Agent</h2>
+          <p>Here is the latest information from your AI assistant.</p>
+        </div>
+        <div id="response-area" class="response-container">
+          <div id="loader" class="loader"></div>
+          <h4 id="agent-summary" style="display:none;"></h4>
+          <!-- UPDATED: This div will now render the Markdown output -->
+          <div id="agent-details" class="details-content"></div>
+          <!-- NEW: Assessment Agent Dashboard Sections -->
+          {% if agent_type == 'assessment' %}
+          <div id="assessment-dashboard" style="display:none;">
+            <div class="dashboard-summary" style="margin-bottom:1.5rem; padding:1rem; background:rgba(0,217,255,0.08); border-radius:8px;">
+              <h3 style="color:var(--primary-color); font-size:1.3rem; margin-bottom:0.5rem;">Assessment Overview</h3>
+              <div id="assessment-summary-content">Loading summary...</div>
+            </div>
+            <div class="dashboard-section" style="margin-bottom:1.5rem;">
+              <h4 style="color:var(--primary-light); margin-bottom:0.5rem;">Completed Courses</h4>
+              <div id="completed-courses-list">Loading courses...</div>
+            </div>
+            <div class="dashboard-section">
+              <h4 style="color:var(--primary-light); margin-bottom:0.5rem;">Recent Assessment Results</h4>
+              <div id="recent-assessments-list">Loading results...</div>
+            </div>
+          </div>
+          <div id="assessment-error" style="display:none; color:#ef4444; font-weight:600; margin-top:1rem;"></div>
+          {% endif %}
+          <!-- NEW: Refreshment recommendations section -->
+          <div id="refreshment-section" style="display:none; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border-color);">
+            <div id="refreshment-content" class="details-content"></div>
+          </div>
+        </div>
+      </div>
+      <div class="spline-container">
+        <script type="module" src="https://unpkg.com/@splinetool/viewer@1.3.1/build/spline-viewer.js"></script>
+        <spline-viewer url="https://prod.spline.design/Vrzr5n0E32R0T1dC/scene.splinecode"></spline-viewer>
+      </div>
+    </main>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script>
+    const agentType = "{{ agent_type }}";
+    document.addEventListener('DOMContentLoaded', () => {
+        gsap.from('.sidebar', { duration: 1, x: -260, ease: 'power3.out' });
+        gsap.from('.agent-interaction, .spline-container', { duration: 1, opacity: 0, y: 30, ease: 'power3.out', stagger: 0.2, delay: 0.3 });
+        fetchAgentResponse();
+    });
+
+    async function fetchAgentResponse() {
+        const loader = document.getElementById("loader");
+        const summaryEl = document.getElementById("agent-summary");
+        const detailsEl = document.getElementById("agent-details");
+        const refreshmentSection = document.getElementById("refreshment-section");
+        const refreshmentContent = document.getElementById("refreshment-content");
+        // New dashboard elements
+        const assessmentDashboard = document.getElementById("assessment-dashboard");
+        const assessmentError = document.getElementById("assessment-error");
+        const assessmentSummaryContent = document.getElementById("assessment-summary-content");
+        const completedCoursesList = document.getElementById("completed-courses-list");
+        const recentAssessmentsList = document.getElementById("recent-assessments-list");
+        
+        try {
+            const res = await fetch('/employee/ask_agent', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ agent: agentType }),
+                credentials: 'include'
+            });
+            const data = await res.json();
+            
+            loader.style.display = "none";
+            summaryEl.style.display = "block";
+
+            if (data.error) {
+                summaryEl.textContent = "Error";
+                detailsEl.innerHTML = `<p>${data.error}</p>`;
+                if (assessmentError) {
+                  assessmentError.style.display = 'block';
+                  assessmentError.textContent = data.error;
+                }
+                if (assessmentDashboard) assessmentDashboard.style.display = 'none';
+                return;
+            }
+            summaryEl.textContent = data.summary;
+            
+            // BUG FIX: Join with a proper newline character ('\n') instead of a literal string ('\\n')
+            const markdownContent = data.details.join('\n');
+            detailsEl.innerHTML = marked.parse(markdownContent);
+
+            // Assessment agent dashboard logic
+            if (agentType === 'assessment') {
+              if (assessmentDashboard) assessmentDashboard.style.display = 'block';
+              if (assessmentError) assessmentError.style.display = 'none';
+              // Summary
+              if (assessmentSummaryContent) {
+                assessmentSummaryContent.textContent = data.summary || 'No summary available.';
+              }
+              // Completed courses
+              if (completedCoursesList) {
+                if (data.completed_courses && data.completed_courses.length > 0) {
+                  completedCoursesList.innerHTML = '';
+                  data.completed_courses.forEach(courseName => {
+                    const div = document.createElement('div');
+                    div.className = 'course-item';
+                    div.innerHTML = `<span class='course-name'>${courseName}</span>`;
+                    const btn = document.createElement('button');
+                    btn.className = 'assessment-btn';
+                    btn.textContent = 'Take Assessment';
+                    btn.onclick = () => createAssessment(courseName);
+                    div.appendChild(btn);
+                    completedCoursesList.appendChild(div);
+                  });
+                } else {
+                  completedCoursesList.innerHTML = '<span style="color:#ef4444;">No completed courses yet. Complete a course to unlock assessments.</span>';
+                }
+              }
+              // Recent assessments
+              if (recentAssessmentsList) {
+                if (data.recent_assessments && data.recent_assessments.length > 0) {
+                  recentAssessmentsList.innerHTML = '';
+                  data.recent_assessments.forEach(result => {
+                    const div = document.createElement('div');
+                    div.className = 'course-item';
+                    div.innerHTML = `<span class='course-name'>${result.course_name}</span> <span style='margin-left:1rem;'>Score: <b>${result.marks_obtained}</b></span>`;
+                    recentAssessmentsList.appendChild(div);
+                  });
+                } else {
+                  recentAssessmentsList.innerHTML = '<span style="color:#94a3b8;">No recent assessment results.</span>';
+                }
+              }
+            }
+            // Refreshment recommendations (tracker agent)
+            if (data.refreshment && agentType === 'tracker') {
+                refreshmentSection.style.display = "block";
+                refreshmentContent.innerHTML = marked.parse(data.refreshment);
+            } else {
+                refreshmentSection.style.display = "none";
+            }
+
+        } catch (err) {
+            loader.style.display = "none";
+            summaryEl.textContent = "Error";
+            detailsEl.innerHTML = `<p>Failed to fetch AI response. Please try again later.</p>`;
+            if (assessmentError) {
+              assessmentError.style.display = 'block';
+              assessmentError.textContent = 'Failed to fetch assessment data. Please try again later.';
+            }
+            if (assessmentDashboard) assessmentDashboard.style.display = 'none';
+        }
+    }
+    
+    // Function to create an assessment for a specific course
+    async function createAssessment(courseName) {
+        try {
+            // If it's a knowledge check, redirect to the knowledge quiz route
+            if (courseName === 'knowledge_check') {
+                window.location.href = '/employee/generate_knowledge_quiz';
+                return;
+            }
+            
+            // Otherwise, redirect to the course-specific assessment creation route
+            window.location.href = `/employee/create_assessment/${encodeURIComponent(courseName)}`;
+        } catch (err) {
+            console.error('Error creating assessment:', err);
+            alert('Failed to create assessment. Please try again.');
+        }
+    }
+
+    async function logout(event) {
+      event.preventDefault();
+      await fetch("/logout", {method: "POST", credentials: "include"});
+      gsap.to('.dashboard-container', { duration: 0.5, opacity: 0, ease: 'power2.in', onComplete: () => { window.location.href = "/"; } });
+    }
+  </script>
+</body>
+</html>
