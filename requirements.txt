@@ -1,1 +1,6 @@
-ÿþ
+Flask
+Flask-Cors
+langchain-google-genai
+pandas
+PyMySQL
+requests
