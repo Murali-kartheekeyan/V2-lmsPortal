@@ -6,7 +6,7 @@ from db import get_db_connection
 import json
 
 # Use your Gemini API Key (set as environment variable)
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "AIzaSyC9i-w-UJxYINBWdveXDoRw8iZtRy4GnMo")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 # Initialize the LLM
 llm = ChatGoogleGenerativeAI(
@@ -837,4 +837,5 @@ def hr_agent_process_file(df: pd.DataFrame):
         conn.commit()
         return employees_added, None
     except Exception as e: conn.rollback(); return 0, str(e)
+
     finally: conn.close()
